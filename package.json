@@ -1,6 +1,6 @@
 {
   "name": "@thisiszas/bigscreen-board",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "数据大屏屏幕适配库: 1920x1080 设计稿 + 等比 scale 自适应(ScaleScreen/useScreenScale), 零 echarts/字体依赖",
   "type": "module",
   "main": "./dist/index.cjs",
