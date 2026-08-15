@@ -55,6 +55,11 @@
     "echarts": "^5.4.0",
     "echarts-liquidfill": "^3.1.0"
   },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.6.2",
+    "vite": "^4.5.14",
+    "vue": "^3.3.1"
+  },
   "scripts": {
     "build": "vite build && node scripts/copy-types.mjs",
     "prepublishOnly": "npm run build"

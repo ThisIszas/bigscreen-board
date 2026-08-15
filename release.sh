@@ -10,6 +10,7 @@
 #   --access <mode>   包访问级别 public|restricted(默认 public)
 #   --tag <name>      dist-tag(默认 latest)
 #   --no-build        跳过构建(默认自动构建)
+#   --dry-run         演练模式: 只构建+检查, 不递增版本、不发布
 #   --force           跳过 git 工作区检查
 #
 # 示例:
@@ -34,6 +35,7 @@ REGISTRY="${NPM_REGISTRY:-https://registry.npmjs.org/}"
 ACCESS="public"
 TAG="latest"
 DO_BUILD=1
+DRY_RUN=0
 FORCE=0
 
 while [[ $# -gt 0 ]]; do
@@ -42,6 +44,7 @@ while [[ $# -gt 0 ]]; do
     --access)   ACCESS="$2";   shift 2 ;;
     --tag)      TAG="$2";      shift 2 ;;
     --no-build) DO_BUILD=0;    shift ;;
+    --dry-run)  DRY_RUN=1;     shift ;;
     --force)    FORCE=1;       shift ;;
     *) echo "未知参数: $1" >&2; exit 1 ;;
   esac
@@ -60,23 +63,22 @@ if [[ "$FORCE" -eq 0 ]]; then
   fi
 fi
 
-# 2. 构建 lib
+# 2. 构建 lib(通过 npm run build, 自动使用本地 node_modules)
 if [[ "$DO_BUILD" -eq 1 ]]; then
   echo "==> 构建 lib..."
-  VITE_BIN=""
-  if [[ -x "./node_modules/.bin/vite" ]]; then
-    VITE_BIN="./node_modules/.bin/vite"
-  elif [[ -x "../../node_modules/.bin/vite" ]]; then
-    VITE_BIN="../../node_modules/.bin/vite"
-  else
-    echo "!! 未找到 vite, 请先安装依赖。" >&2
-    exit 1
-  fi
-  "$VITE_BIN" build
-  node scripts/copy-types.mjs
+  npm run build
 fi
 
 # 3. 版本递增(自动打 git tag + commit)
+if [[ "$DRY_RUN" -eq 1 ]]; then
+  echo "[dry-run] 跳过: npm version $LEVEL"
+  echo "[dry-run] 跳过: npm publish --registry $REGISTRY --access $ACCESS --tag $TAG"
+  echo ""
+  echo "=============================================="
+  echo "  ✅ 演练完成(未发布)。正式发布请去掉 --dry-run"
+  echo "=============================================="
+  exit 0
+fi
 echo "==> 版本递增: $LEVEL"
 npm version "$LEVEL" -m "chore(release): v%s"
 
