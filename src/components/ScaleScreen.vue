@@ -8,7 +8,7 @@
 
 <script lang="ts" setup>
 import { computed, onMounted, onUnmounted, provide, ref } from 'vue';
-import { BOARD_DESIGN, registerBoardChartTheme } from '../theme/boardTheme';
+import { BOARD_DESIGN } from '../theme/boardTheme';
 import type { BoardFitMode } from '../theme/boardTheme';
 import { useScreenScale } from '../composables/useScreenScale';
 import { ScreenScaleKey } from '../theme/screenScaleContext';
@@ -69,7 +69,6 @@ const screenStyle = computed(() => ({
 provide(ScreenScaleKey, { scale: computed(() => state.scale), design: design.value });
 
 onMounted(() => {
-  registerBoardChartTheme();
   start();
   if (props.fullScreen) {
     document.body.classList.add('board-fullscreen');
@@ -84,12 +83,6 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-/* 大屏数字专用字体 */
-@font-face {
-  font-family: 'board-number';
-  src: url('../assets/font/ysbth.ttf');
-}
-
 /* 全屏大屏页: 接管 body 底色, 保证等比留白区域为深色(挂类名便于离开时恢复) */
 body.board-fullscreen {
   background: #050b1a !important;

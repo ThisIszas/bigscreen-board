@@ -1,7 +1,6 @@
-import type { DefineComponent, InjectionKey, PropType, Ref } from 'vue';
-import type { EChartsOption, EChartsType } from 'echarts';
+import type { DefineComponent, InjectionKey, Ref } from 'vue';
 
-/* ================= 基准常量 / 主题 ================= */
+/* ================= 基准常量 ================= */
 
 /** 设计稿基准尺寸(像素), 默认 1920x1080 */
 export declare const BOARD_DESIGN: {
@@ -12,7 +11,7 @@ export declare const BOARD_DESIGN: {
 /** 适配模式: scale=等比缩放(默认, 不变形, 留白兜底) / stretch=拉伸铺满(无黑边, 可接受轻微变形) */
 export declare type BoardFitMode = 'scale' | 'stretch';
 
-/** 大屏主题色板 */
+/** 大屏主题色板(纯常量, 供业务自定义样式/图表时参考) */
 export declare const BOARD_COLORS: {
   readonly primary: string;
   readonly success: string;
@@ -25,9 +24,6 @@ export declare const BOARD_COLORS: {
   readonly panelBorder: string;
   readonly bgDeep: string;
 };
-
-/** 注册全局 echarts 深色主题 'board-dark'(单例, 幂等) */
-export declare function registerBoardChartTheme(): void;
 
 /* ================= 缩放上下文 ================= */
 
@@ -64,32 +60,6 @@ export declare interface ScaleScreenProps {
 
 /** 固定设计稿 + 等比 scale 投影的适配容器(大屏根组件) */
 export declare const ScaleScreen: DefineComponent<ScaleScreenProps, {}, any>;
-
-export declare interface ChartWidgetProps {
-  /** echarts option(完整可渲染配置) */
-  option: EChartsOption;
-  /** 主题名, 默认使用框架注册的深色主题 'board-dark' */
-  theme?: string;
-  /** 监听容器尺寸自动 resize, 默认 true */
-  autoResize?: boolean;
-  /** setOption 时是否整体替换(notMerge), 默认 true */
-  notMerge?: boolean;
-  /** 渲染像素密度; 默认按屏幕等比缩放比自动提升, 放大时保持清晰 */
-  pixelRatio?: number;
-}
-
-/** echarts 封装组件(自动 init / resize / dispose) */
-export declare const ChartWidget: DefineComponent<
-  ChartWidgetProps,
-  {},
-  {},
-  {},
-  {},
-  {},
-  {},
-  {},
-  { getInstance: () => EChartsType | null }
->;
 
 export declare interface BoardPanelProps {
   /** 面板标题 */
@@ -155,7 +125,3 @@ export declare function useBoardPolling<T>(
   start: () => void;
   stop: () => void;
 };
-
-/* ================= 导出辅助 ================= */
-export type { EChartsOption, EChartsType };
-export type { PropType };
