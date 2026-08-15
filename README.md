@@ -1,5 +1,9 @@
 # @thisiszas/bigscreen-board
 
+[![npm version](https://img.shields.io/npm/v/@thisiszas/bigscreen-board)](https://www.npmjs.com/package/@thisiszas/bigscreen-board)
+[![npm downloads](https://img.shields.io/npm/dm/@thisiszas/bigscreen-board)](https://www.npmjs.com/package/@thisiszas/bigscreen-board)
+[![license](https://img.shields.io/npm/l/@thisiszas/bigscreen-board)](https://www.npmjs.com/package/@thisiszas/bigscreen-board)
+
 数据大屏屏幕适配库：把固定设计稿等比投影到任意分辨率屏幕，支持等比（scale）/ 拉伸（stretch）双适配模式、背景 cover 自适应延展。仅 peer 依赖 vue，不捆绑 echarts / 字体。
 
 ## 安装
