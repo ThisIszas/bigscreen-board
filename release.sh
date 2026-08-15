@@ -9,13 +9,20 @@
 #   --registry <url>  发布目标源(默认取环境变量 NPM_REGISTRY, 再默认官方源)
 #   --access <mode>   包访问级别 public|restricted(默认 public)
 #   --tag <name>      dist-tag(默认 latest)
+#   --otp <code>      一次性密码(账号开启 2FA 时, 传 authenticator 的 6 位码)
 #   --no-build        跳过构建(默认自动构建)
 #   --dry-run         演练模式: 只构建+检查, 不递增版本、不发布
 #   --force           跳过 git 工作区检查
 #
+# 环境变量:
+#   NPM_REGISTRY       发布源(等同 --registry)
+#   NPM_TOKEN          bypass 2FA 的访问令牌(CI 推荐), 优先于 --otp
+#
 # 示例:
 #   ./release.sh patch                            # 官方源, 版本 +0.0.1
 #   ./release.sh minor --tag beta                 # 发布 beta tag
+#   ./release.sh patch --otp 123456                  # 2FA 账号: 输入一次性密码
+#   NPM_TOKEN=xxx ./release.sh patch                 # 或使用 bypass 2FA token
 #   ./release.sh patch --registry https://npm.your-company.com/ --access restricted
 # ============================================================
 set -euo pipefail
@@ -34,6 +41,7 @@ shift || true
 REGISTRY="${NPM_REGISTRY:-https://registry.npmjs.org/}"
 ACCESS="public"
 TAG="latest"
+OTP=""
 DO_BUILD=1
 DRY_RUN=0
 FORCE=0
@@ -43,6 +51,7 @@ while [[ $# -gt 0 ]]; do
     --registry) REGISTRY="$2"; shift 2 ;;
     --access)   ACCESS="$2";   shift 2 ;;
     --tag)      TAG="$2";      shift 2 ;;
+    --otp)      OTP="$2";      shift 2 ;;
     --no-build) DO_BUILD=0;    shift ;;
     --dry-run)  DRY_RUN=1;     shift ;;
     --force)    FORCE=1;       shift ;;
@@ -72,7 +81,7 @@ fi
 # 3. 版本递增(自动打 git tag + commit)
 if [[ "$DRY_RUN" -eq 1 ]]; then
   echo "[dry-run] 跳过: npm version $LEVEL"
-  echo "[dry-run] 跳过: npm publish --registry $REGISTRY --access $ACCESS --tag $TAG"
+  echo "[dry-run] 跳过: npm publish --registry $REGISTRY --access $ACCESS --tag $TAG${OTP:+ --otp $OTP}"
   echo ""
   echo "=============================================="
   echo "  ✅ 演练完成(未发布)。正式发布请去掉 --dry-run"
@@ -82,9 +91,23 @@ fi
 echo "==> 版本递增: $LEVEL"
 npm version "$LEVEL" -m "chore(release): v%s"
 
-# 4. 发布
-echo "==> 发布到 $REGISTRY (access=$ACCESS, tag=$TAG)"
-npm publish --registry "$REGISTRY" --access "$ACCESS" --tag "$TAG"
+# 4. 发布(2FA 认证: NPM_TOKEN > --otp > 交互输入)
+PUBLISH_ARGS=(--registry "$REGISTRY" --access "$ACCESS" --tag "$TAG")
+if [[ -n "${NPM_TOKEN:-}" ]]; then
+  TMP_NPMRC="$(mktemp)"
+  echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > "$TMP_NPMRC"
+  echo "==> 使用 NPM_TOKEN(bypass 2FA)发布到 $REGISTRY (access=$ACCESS, tag=$TAG)"
+  npm publish --userconfig "$TMP_NPMRC" "${PUBLISH_ARGS[@]}"
+  rm -f "$TMP_NPMRC"
+else
+  if [[ -n "$OTP" ]]; then
+    PUBLISH_ARGS+=(--otp "$OTP")
+    echo "==> 使用 OTP 发布到 $REGISTRY (access=$ACCESS, tag=$TAG)"
+  else
+    echo "==> 发布到 $REGISTRY (access=$ACCESS, tag=$TAG), 按提示输入 2FA 一次性密码..."
+  fi
+  npm publish "${PUBLISH_ARGS[@]}"
+fi
 
 # 5. 验证
 NEW_VERSION="$(node -p "require('./package.json').version")"
