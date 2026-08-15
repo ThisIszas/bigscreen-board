@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # ============================================================
-# @zl/bigscreen-board 发布脚本(构建 + 版本 + 发布 + 验证一条龙)
+# @thisiszl/bigscreen-board 发布脚本(构建 + 版本 + 发布 + 验证一条龙)
 #
 # 用法:
 #   ./release.sh [patch|minor|major] [选项...]
@@ -113,6 +113,6 @@ fi
 NEW_VERSION="$(node -p "require('./package.json').version")"
 echo ""
 echo "=============================================="
-echo "  ✅ @zl/bigscreen-board@$NEW_VERSION 发布成功"
+echo "  ✅ @thisiszl/bigscreen-board@$NEW_VERSION 发布成功"
 echo "=============================================="
-npm view "@zl/bigscreen-board@$NEW_VERSION" version dist-tags --registry "$REGISTRY" 2>/dev/null || true
+npm view "@thisiszl/bigscreen-board@$NEW_VERSION" version dist-tags --registry "$REGISTRY" 2>/dev/null || true

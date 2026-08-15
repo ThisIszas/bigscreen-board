@@ -1,5 +1,5 @@
 {
-  "name": "@zl/bigscreen-board",
+  "name": "@thisiszl/bigscreen-board",
   "version": "1.0.6",
   "description": "数据可视化大屏框架(业内主流方案): 1920x1080 设计稿 + 等比 scale 自适应, 提供 Vue3 组件(ScaleScreen/ChartWidget/BoardPanel)与 composables(useScreenScale/useBoardPolling)",
   "type": "module",
