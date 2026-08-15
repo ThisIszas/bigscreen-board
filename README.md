@@ -1,4 +1,4 @@
-# @thisiszl/bigscreen-board
+# @thisiszas/bigscreen-board
 
 > 数据可视化大屏框架 —— 业内主流适配方案开箱即用。
 
@@ -18,9 +18,9 @@
 
 ## 安装
 
-    npm install @thisiszl/bigscreen-board echarts echarts-liquidfill
+    npm install @thisiszas/bigscreen-board echarts echarts-liquidfill
     # 或
-    pnpm add @thisiszl/bigscreen-board echarts echarts-liquidfill
+    pnpm add @thisiszas/bigscreen-board echarts echarts-liquidfill
 
 > <code>vue@^3.3</code>、<code>echarts@^5.4</code>、<code>echarts-liquidfill@^3.1</code> 为
 > peerDependencies，需宿主项目自行安装。
@@ -44,8 +44,8 @@
 
     <script lang="ts" setup>
     import { computed } from 'vue';
-    import { ScaleScreen, BoardPanel, ChartWidget, useBoardPolling } from '@thisiszl/bigscreen-board';
-    import '@thisiszl/bigscreen-board/style.css'; // 组件样式 + 数字字体(必须引入一次)
+    import { ScaleScreen, BoardPanel, ChartWidget, useBoardPolling } from '@thisiszas/bigscreen-board';
+    import '@thisiszas/bigscreen-board/style.css'; // 组件样式 + 数字字体(必须引入一次)
     import type { EChartsOption } from 'echarts';
 
     // 1. 数据轮询: 每 5s 拉取一次, 组件卸载自动停止
@@ -67,7 +67,7 @@
     .num { font-family: 'board-number'; font-size: 64px; color: #e6f7ff; }
     </style>
 
-样式文件必须引入一次（<code>import '@thisiszl/bigscreen-board/style.css'</code>）：其中包含面板/适配容器
+样式文件必须引入一次（<code>import '@thisiszas/bigscreen-board/style.css'</code>）：其中包含面板/适配容器
 样式、<code>board-number</code> 数字字体（<code>ysbth.ttf</code> 已内联，随包自包含）。
 
 ## API 文档
