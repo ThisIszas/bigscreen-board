@@ -95,9 +95,19 @@ npm version "$LEVEL" -m "chore(release): v%s"
 PUBLISH_ARGS=(--registry "$REGISTRY" --access "$ACCESS" --tag "$TAG")
 if [[ -n "${NPM_TOKEN:-}" ]]; then
   TMP_NPMRC="$(mktemp)"
-  echo "//registry.npmjs.org/:_authToken=$NPM_TOKEN" > "$TMP_NPMRC"
-  echo "==> 使用 NPM_TOKEN(bypass 2FA)发布到 $REGISTRY (access=$ACCESS, tag=$TAG)"
-  npm publish --userconfig "$TMP_NPMRC" "${PUBLISH_ARGS[@]}"
+  # 按目标 registry 的主机名写入 token(兼容私有源)
+  HOST="${REGISTRY#https://}"
+  HOST="${HOST#http://}"
+  HOST="${HOST%%/*}"
+  echo "//$HOST/:_authToken=$NPM_TOKEN" > "$TMP_NPMRC"
+  # 发布前校验 token: 无效则回退到本地登录态(交互 OTP), 不再静默失败
+  if npm whoami --userconfig "$TMP_NPMRC" --registry "$REGISTRY" >/dev/null 2>&1; then
+    echo "==> 使用 NPM_TOKEN(bypass 2FA)发布到 $REGISTRY (access=$ACCESS, tag=$TAG)"
+    npm publish --userconfig "$TMP_NPMRC" "${PUBLISH_ARGS[@]}"
+  else
+    echo "!! NPM_TOKEN 无效(whoami 未通过), 已忽略, 改用本地登录态, 请按提示输入 2FA 一次性密码..." >&2
+    npm publish "${PUBLISH_ARGS[@]}"
+  fi
   rm -f "$TMP_NPMRC"
 else
   if [[ -n "$OTP" ]]; then
